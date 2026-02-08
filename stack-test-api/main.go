@@ -10,7 +10,7 @@ import (
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		nsName := "stack-test-api"
+		nsName := "api"
 
 		ns, err := corev1.NewNamespace(ctx, nsName, &corev1.NamespaceArgs{
 			Metadata: &metav1.ObjectMetaArgs{
