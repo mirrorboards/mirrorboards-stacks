@@ -1,0 +1,7 @@
+name: stack-test-api
+description: stack-test-api [nginx test]
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go
