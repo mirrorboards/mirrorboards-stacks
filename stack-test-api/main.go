@@ -89,12 +89,13 @@ func main() {
 			OtherFields: map[string]interface{}{
 				"spec": pulumi.Map{
 					"hostnames": pulumi.StringArray{
-						pulumi.String("test-api.mirrorboards.network"),
+						pulumi.String("api.mirrorboards.network"),
 					},
 					"parentRefs": pulumi.Array{
 						pulumi.Map{
-							"name":      pulumi.String("mirrorboards-platform-gateway"),
-							"namespace": pulumi.String("aks-istio-ingress"),
+							"name":        pulumi.String("mirrorboards-platform-gateway"),
+							"namespace":   pulumi.String("aks-istio-ingress"),
+							"sectionName": pulumi.String("https"),
 						},
 					},
 					"rules": pulumi.Array{
