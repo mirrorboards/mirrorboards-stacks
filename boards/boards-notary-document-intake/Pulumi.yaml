@@ -1,0 +1,7 @@
+name: boards-notary-document-intake
+description: boards-notary-document-intake [notary][document-intake]
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go
