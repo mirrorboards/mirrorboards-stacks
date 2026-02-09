@@ -89,7 +89,7 @@ func main() {
 			OtherFields: map[string]interface{}{
 				"spec": pulumi.Map{
 					"hostnames": pulumi.StringArray{
-						pulumi.String("api.mirrorboards.network"),
+						pulumi.String("test.mirrorboards.network"),
 					},
 					"parentRefs": pulumi.Array{
 						pulumi.Map{
