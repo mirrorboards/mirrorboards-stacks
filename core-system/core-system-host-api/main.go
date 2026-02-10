@@ -1,23 +1,16 @@
 package main
 
 import (
-	"encoding/base64"
-
 	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes"
 	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/apiextensions"
 	appsv1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/apps/v1"
 	corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/meta/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 )
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		githubCfg := config.New(ctx, "github")
-		ghUsername := pulumi.String(githubCfg.Get("username"))
-		ghToken := githubCfg.RequireSecret("token")
-
 		// Get namespace from core-system stack
 		coreSystemStack, err := pulumi.NewStackReference(ctx, "mirrorboards/core-system/dev", nil)
 		if err != nil {
@@ -31,28 +24,6 @@ func main() {
 			return err
 		}
 		PostgresSecretName := postgresStack.GetStringOutput(pulumi.String("PostgresSecretName"))
-
-		// GHCR image pull secret
-		dockerConfigJSON := pulumi.All(ghUsername, ghToken).ApplyT(func(args []interface{}) string {
-			user := args[0].(string)
-			token := args[1].(string)
-			auth := base64.StdEncoding.EncodeToString([]byte(user + ":" + token))
-			return `{"auths":{"ghcr.io":{"username":"` + user + `","password":"` + token + `","auth":"` + auth + `"}}}`
-		}).(pulumi.StringOutput)
-
-		imagePullSecret, err := corev1.NewSecret(ctx, "core-system-host-api-image-pull-secret", &corev1.SecretArgs{
-			Metadata: &metav1.ObjectMetaArgs{
-				Name:      pulumi.String("ghcr-systemboards"),
-				Namespace: NamespaceName,
-			},
-			Type: pulumi.String("kubernetes.io/dockerconfigjson"),
-			StringData: pulumi.StringMap{
-				".dockerconfigjson": dockerConfigJSON,
-			},
-		})
-		if err != nil {
-			return err
-		}
 
 		appLabels := pulumi.StringMap{
 			"app": pulumi.String("systemboards-api"),
@@ -74,11 +45,6 @@ func main() {
 						Labels: appLabels,
 					},
 					Spec: &corev1.PodSpecArgs{
-						ImagePullSecrets: corev1.LocalObjectReferenceArray{
-							&corev1.LocalObjectReferenceArgs{
-								Name: imagePullSecret.Metadata.Name(),
-							},
-						},
 						Containers: corev1.ContainerArray{
 							&corev1.ContainerArgs{
 								Name:            pulumi.String("systemboards-api"),
