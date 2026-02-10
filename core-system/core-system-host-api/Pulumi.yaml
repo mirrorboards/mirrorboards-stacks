@@ -1,0 +1,7 @@
+name: core-system-host-api
+description: core-system [host][api]
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go
