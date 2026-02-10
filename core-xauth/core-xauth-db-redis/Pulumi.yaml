@@ -1,5 +1,5 @@
-name: actaboards-api-db-redis
-description: actaboards-api-db-redis
+name: core-xauth-db-redis
+description: core-xauth-db-redis
 runtime: go
 config:
   pulumi:tags:
