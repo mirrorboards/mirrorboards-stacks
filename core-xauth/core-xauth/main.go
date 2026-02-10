@@ -8,9 +8,9 @@ import (
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		Namespace, err := corev1.NewNamespace(ctx, "core-system-namespace", &corev1.NamespaceArgs{
+		Namespace, err := corev1.NewNamespace(ctx, "core-xauth-namespace", &corev1.NamespaceArgs{
 			Metadata: &metav1.ObjectMetaArgs{
-				Name: pulumi.String("core-system"),
+				Name: pulumi.String("core-xauth"),
 			},
 		})
 		if err != nil {
