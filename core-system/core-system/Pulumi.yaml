@@ -1,0 +1,7 @@
+name: core-system
+description: core-system
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go

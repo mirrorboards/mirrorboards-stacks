@@ -1,0 +1,7 @@
+name: core-system-db-postgres
+description: core-system [db][postgres]
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go
