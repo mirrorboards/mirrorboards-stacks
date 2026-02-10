@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes"
+	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/apiextensions"
 	appsv1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/apps/v1"
 	corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/meta/v1"
@@ -112,8 +114,57 @@ func main() {
 			return err
 		}
 
+		_, err = apiextensions.NewCustomResource(ctx, "core-system-host-api-httproute", &apiextensions.CustomResourceArgs{
+			ApiVersion: pulumi.String("gateway.networking.k8s.io/v1"),
+			Kind:       pulumi.String("HTTPRoute"),
+			Metadata: &metav1.ObjectMetaArgs{
+				Name:      pulumi.String("systemboards-api-httproute"),
+				Namespace: NamespaceName,
+				Annotations: pulumi.StringMap{
+					"external-dns.alpha.kubernetes.io/hostname": pulumi.String("system.mirrorboards.network"),
+				},
+			},
+			OtherFields: kubernetes.UntypedArgs{
+				"spec": pulumi.Map{
+					"parentRefs": pulumi.Array{
+						pulumi.Map{
+							"name":        pulumi.String("mirrorboards-platform-gateway"),
+							"namespace":   pulumi.String("aks-istio-ingress"),
+							"kind":        pulumi.String("Gateway"),
+							"sectionName": pulumi.String("https"),
+						},
+					},
+					"hostnames": pulumi.Array{
+						pulumi.String("system.mirrorboards.network"),
+					},
+					"rules": pulumi.Array{
+						pulumi.Map{
+							"matches": pulumi.Array{
+								pulumi.Map{
+									"path": pulumi.Map{
+										"type":  pulumi.String("PathPrefix"),
+										"value": pulumi.String("/"),
+									},
+								},
+							},
+							"backendRefs": pulumi.Array{
+								pulumi.Map{
+									"name": Service.Metadata.Name(),
+									"port": pulumi.Int(3003),
+								},
+							},
+						},
+					},
+				},
+			},
+		}, pulumi.DependsOn([]pulumi.Resource{Service}))
+		if err != nil {
+			return err
+		}
+
 		ctx.Export("DeploymentName", Deployment.Metadata.Name())
 		ctx.Export("ServiceName", Service.Metadata.Name())
+		ctx.Export("Hostname", pulumi.String("https://system.mirrorboards.network"))
 
 		return nil
 	})
