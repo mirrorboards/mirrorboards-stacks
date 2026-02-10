@@ -1,8 +1,6 @@
 package main
 
 import (
-	"github.com/mirrorboards-go/mirrorboards-pulumi/namespace"
-
 	corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/meta/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
@@ -10,11 +8,9 @@ import (
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		ns := namespace.NewNamespace("core-system")
-
-		Namespace, err := corev1.NewNamespace(ctx, ns.Get("namespace"), &corev1.NamespaceArgs{
+		Namespace, err := corev1.NewNamespace(ctx, "core-system-namespace", &corev1.NamespaceArgs{
 			Metadata: &metav1.ObjectMetaArgs{
-				Name: pulumi.String(ns.Get()),
+				Name: pulumi.String("core-system"),
 			},
 		})
 		if err != nil {

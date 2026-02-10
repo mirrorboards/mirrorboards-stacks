@@ -5,12 +5,9 @@ go 1.24.7
 toolchain go1.24.12
 
 require (
-	github.com/mirrorboards-go/mirrorboards-pulumi v0.0.0
 	github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.25.0
 	github.com/pulumi/pulumi/sdk/v3 v3.214.0
 )
-
-replace github.com/mirrorboards-go/mirrorboards-pulumi => ../../../../mirrorboards-go/mirrorboards-pulumi
 
 require (
 	dario.cat/mergo v1.0.0 // indirect
