@@ -1,5 +1,5 @@
-name: stack-test-api
-description: stack-test-api [nginx test]
+name: core-xauth
+description: core-xauth
 runtime: go
 config:
   pulumi:tags:

@@ -1,0 +1,7 @@
+name: actaboards-api-db-redis
+description: actaboards-api-db-redis
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go
