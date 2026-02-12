@@ -52,7 +52,7 @@ func main() {
 		}
 
 		publicAccessBlock, err := apiextensions.NewCustomResource(ctx, ns.Get("s3", "public-access-block"), &apiextensions.CustomResourceArgs{
-			ApiVersion: pulumi.String("s3.aws.upbound.io/v1beta2"),
+			ApiVersion: pulumi.String("s3.aws.upbound.io/v1beta1"),
 			Kind:       pulumi.String("BucketPublicAccessBlock"),
 			Metadata: &metav1.ObjectMetaArgs{
 				Name: pulumi.String(bucketName + "-public-access"),
@@ -89,10 +89,8 @@ func main() {
 						"bucketRef": pulumi.Map{
 							"name": pulumi.String(bucketName),
 						},
-						"rule": pulumi.MapArray{
-							pulumi.Map{
-								"objectOwnership": pulumi.String("BucketOwnerPreferred"),
-							},
+						"rule": pulumi.Map{
+							"objectOwnership": pulumi.String("BucketOwnerPreferred"),
 						},
 					},
 				},
