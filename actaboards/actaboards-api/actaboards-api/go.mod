@@ -5,11 +5,9 @@ go 1.24.7
 toolchain go1.24.12
 
 require (
-	github.com/mirrorboards-go/mirrorboards-pulumi v0.0.0
+	github.com/mirrorboards-go/mirrorboards-pulumi v0.0.0-20260206104331-3cbb7dc4d4e0
 	github.com/pulumi/pulumi/sdk/v3 v3.214.0
 )
-
-replace github.com/mirrorboards-go/mirrorboards-pulumi => ../../../../mirrorboards-go/mirrorboards-pulumi
 
 require (
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
