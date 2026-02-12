@@ -5,8 +5,13 @@ go 1.24.7
 toolchain go1.24.12
 
 require (
-	github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.25.0
+	github.com/mirrorboards-go/mirrorboards-pulumi v0.0.0-20260206104331-3cbb7dc4d4e0
 	github.com/pulumi/pulumi/sdk/v3 v3.214.0
+)
+
+require (
+	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
+	github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.25.0
 )
 
 require (
@@ -16,7 +21,6 @@ require (
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
-	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
@@ -68,6 +72,7 @@ require (
 	github.com/skeema/knownhosts v1.3.0 // indirect
 	github.com/spf13/cobra v1.10.1 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
+	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/texttheater/golang-levenshtein v1.0.1 // indirect
 	github.com/uber/jaeger-client-go v2.30.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
