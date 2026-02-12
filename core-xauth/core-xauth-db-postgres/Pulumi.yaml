@@ -1,0 +1,7 @@
+name: core-xauth-db-postgres
+description: core-xauth [db][postgres]
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go
