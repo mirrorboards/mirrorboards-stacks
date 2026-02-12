@@ -25,7 +25,7 @@ func main() {
 		publicUrlPrefix := fmt.Sprintf("https://%s.s3.%s.amazonaws.com", bucketName, awsRegion)
 
 		// Get namespace from actaboards-api stack
-		apiStack, err := pulumi.NewStackReference(ctx, "organization/actaboards-api/dev", nil)
+		apiStack, err := pulumi.NewStackReference(ctx, "mirrorboards/actaboards-api/dev", nil)
 		if err != nil {
 			return err
 		}
