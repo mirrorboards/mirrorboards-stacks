@@ -9,7 +9,7 @@ require (
 	github.com/pulumi/pulumi/sdk/v3 v3.214.0
 )
 
-replace github.com/mirrorboards-go/mirrorboards-pulumi => ../../../../../../mirrorboards-go/mirrorboards-pulumi
+replace github.com/mirrorboards-go/mirrorboards-pulumi => ../../../../mirrorboards-go/mirrorboards-pulumi
 
 require github.com/pulumi/pulumi-kubernetes/sdk/v4 v4.25.0
 

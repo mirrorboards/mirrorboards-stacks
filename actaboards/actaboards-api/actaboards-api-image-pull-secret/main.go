@@ -15,14 +15,7 @@ func main() {
 
 		githubCfg := config.New(ctx, "github")
 
-		cluster, err := stacks.NewDigitalOceanClusterFromStack(ctx, ns.Get("cluster"), &stacks.DigitalOceanClusterFromStackArgs{
-			StackReference: "organization/actaboards/dev",
-		})
-		if err != nil {
-			return err
-		}
-
-		apiStack, err := pulumi.NewStackReference(ctx, "organization/actaboards-api/dev", nil)
+		apiStack, err := pulumi.NewStackReference(ctx, "mirrorboards/actaboards-api/dev", nil)
 		if err != nil {
 			return err
 		}
@@ -35,7 +28,7 @@ func main() {
 			},
 			Type:       pulumi.String("kubernetes.io/dockerconfigjson"),
 			StringData: stacks.GenerateDockerPullImageConfigJSON("ghcr.io", pulumi.String(githubCfg.Get("username")), githubCfg.RequireSecret("token")),
-		}, pulumi.Provider(cluster.Provider))
+		})
 		if err != nil {
 			return err
 		}

@@ -95,4 +95,4 @@ require (
 	lukechampine.com/frand v1.4.2 // indirect
 )
 
-replace github.com/mirrorboards-go/mirrorboards-pulumi => ../../../../../../mirrorboards-go/mirrorboards-pulumi
+replace github.com/mirrorboards-go/mirrorboards-pulumi => ../../../../mirrorboards-go/mirrorboards-pulumi

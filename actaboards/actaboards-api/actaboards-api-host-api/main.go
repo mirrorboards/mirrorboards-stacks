@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/mirrorboards-go/mirrorboards-pulumi/namespace"
-	"github.com/mirrorboards-go/mirrorboards-pulumi/stacks"
 
 	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes"
 	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/apiextensions"
@@ -16,15 +15,8 @@ func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
 		ns := namespace.NewNamespace("actaboards", "api")
 
-		cluster, err := stacks.NewDigitalOceanClusterFromStack(ctx, ns.Get("cluster"), &stacks.DigitalOceanClusterFromStackArgs{
-			StackReference: "organization/actaboards/dev",
-		})
-		if err != nil {
-			return err
-		}
-
 		// Get Gateway name from actaboards-platform-gateway stack
-		gatewayStack, err := pulumi.NewStackReference(ctx, "organization/actaboards-platform-gateway/dev", nil)
+		gatewayStack, err := pulumi.NewStackReference(ctx, "mirrorboards/actaboards-platform-gateway/dev", nil)
 		if err != nil {
 			return err
 		}
@@ -33,7 +25,7 @@ func main() {
 		GatewayNamespace := gatewayStack.GetStringOutput(pulumi.String("GatewayNamespace"))
 
 		// Get namespace from actaboards-api stack
-		apiStack, err := pulumi.NewStackReference(ctx, "organization/actaboards-api/dev", nil)
+		apiStack, err := pulumi.NewStackReference(ctx, "mirrorboards/actaboards-api/dev", nil)
 		if err != nil {
 			return err
 		}
@@ -41,7 +33,7 @@ func main() {
 		NamespaceName := apiStack.GetStringOutput(pulumi.String("NamespaceName"))
 
 		// Get ImagePullSecret from actaboards-api-image-pull-secret stack
-		imagePullSecretStack, err := pulumi.NewStackReference(ctx, "organization/actaboards-api-image-pull-secret/dev", nil)
+		imagePullSecretStack, err := pulumi.NewStackReference(ctx, "mirrorboards/actaboards-api-image-pull-secret/dev", nil)
 		if err != nil {
 			return err
 		}
@@ -49,7 +41,7 @@ func main() {
 		ImagePullSecretName := imagePullSecretStack.GetStringOutput(pulumi.String("ImagePullSecretName"))
 
 		// Get Postgres secret name from actaboards-api-db-postgres stack
-		postgresStack, err := pulumi.NewStackReference(ctx, "organization/actaboards-api-db-postgres/dev", nil)
+		postgresStack, err := pulumi.NewStackReference(ctx, "mirrorboards/actaboards-api-db-postgres/dev", nil)
 		if err != nil {
 			return err
 		}
@@ -57,7 +49,7 @@ func main() {
 		PostgresSecretName := postgresStack.GetStringOutput(pulumi.String("PostgresSecretName"))
 
 		// Get Redis service name from actaboards-api-db-redis stack
-		redisStack, err := pulumi.NewStackReference(ctx, "organization/actaboards-api-db-redis/dev", nil)
+		redisStack, err := pulumi.NewStackReference(ctx, "mirrorboards/actaboards-api-db-redis/dev", nil)
 		if err != nil {
 			return err
 		}
@@ -65,7 +57,7 @@ func main() {
 		RedisServiceName := redisStack.GetStringOutput(pulumi.String("DragonflyServiceName"))
 
 		// Get S3 secret name from actaboards-api-bucket-s3 stack
-		s3Stack, err := pulumi.NewStackReference(ctx, "organization/actaboards-api-bucket-s3/dev", nil)
+		s3Stack, err := pulumi.NewStackReference(ctx, "mirrorboards/actaboards-api-bucket-s3/dev", nil)
 		if err != nil {
 			return err
 		}
@@ -73,7 +65,7 @@ func main() {
 		S3SecretName := s3Stack.GetStringOutput(pulumi.String("S3SecretName"))
 
 		// Get Indexer Postgres secret from actaboards-indexer-db-postgres stack
-		indexerPostgresStack, err := pulumi.NewStackReference(ctx, "organization/actaboards-indexer-db-postgres/dev", nil)
+		indexerPostgresStack, err := pulumi.NewStackReference(ctx, "mirrorboards/actaboards-indexer-db-postgres/dev", nil)
 		if err != nil {
 			return err
 		}
@@ -81,7 +73,7 @@ func main() {
 		IndexerPostgresSecretName := indexerPostgresStack.GetStringOutput(pulumi.String("PostgresSecretName"))
 
 		// Get Indexer namespace from actaboards-indexer stack
-		indexerStack, err := pulumi.NewStackReference(ctx, "organization/actaboards-indexer/dev", nil)
+		indexerStack, err := pulumi.NewStackReference(ctx, "mirrorboards/actaboards-indexer/dev", nil)
 		if err != nil {
 			return err
 		}
@@ -93,7 +85,7 @@ func main() {
 			pulumi.All(IndexerNamespaceName, IndexerPostgresSecretName).ApplyT(func(args []any) pulumi.ID {
 				return pulumi.ID(args[0].(string) + "/" + args[1].(string))
 			}).(pulumi.IDOutput),
-			nil, pulumi.Provider(cluster.Provider),
+			nil,
 		)
 		if err != nil {
 			return err
@@ -110,7 +102,7 @@ func main() {
 					return data["uri"]
 				}).(pulumi.StringOutput),
 			},
-		}, pulumi.Provider(cluster.Provider))
+		})
 		if err != nil {
 			return err
 		}
@@ -304,7 +296,7 @@ func main() {
 					},
 				},
 			},
-		}, pulumi.Provider(cluster.Provider))
+		})
 
 		if err != nil {
 			return err
@@ -333,7 +325,7 @@ func main() {
 				},
 				Type: pulumi.String("ClusterIP"),
 			},
-		}, pulumi.Provider(cluster.Provider), pulumi.DependsOn([]pulumi.Resource{Deployment}))
+		}, pulumi.DependsOn([]pulumi.Resource{Deployment}))
 
 		if err != nil {
 			return err
@@ -383,7 +375,7 @@ func main() {
 					},
 				},
 			},
-		}, pulumi.Provider(cluster.Provider), pulumi.DependsOn([]pulumi.Resource{Service}))
+		}, pulumi.DependsOn([]pulumi.Resource{Service}))
 
 		if err != nil {
 			return err
@@ -425,7 +417,7 @@ func main() {
 					},
 				},
 			},
-		}, pulumi.Provider(cluster.Provider))
+		})
 
 		if err != nil {
 			return err

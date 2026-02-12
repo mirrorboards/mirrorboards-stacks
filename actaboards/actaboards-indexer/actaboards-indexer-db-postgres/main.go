@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/mirrorboards-go/mirrorboards-pulumi/namespace"
-	"github.com/mirrorboards-go/mirrorboards-pulumi/stacks"
 
 	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes"
 	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/apiextensions"
@@ -14,15 +13,8 @@ func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
 		ns := namespace.NewNamespace("actaboards", "indexer")
 
-		cluster, err := stacks.NewDigitalOceanClusterFromStack(ctx, ns.Get("cluster"), &stacks.DigitalOceanClusterFromStackArgs{
-			StackReference: "organization/actaboards/dev",
-		})
-		if err != nil {
-			return err
-		}
-
 		// Get namespace from actaboards-indexer stack
-		indexerStack, err := pulumi.NewStackReference(ctx, "organization/actaboards-indexer/dev", nil)
+		indexerStack, err := pulumi.NewStackReference(ctx, "mirrorboards/actaboards-indexer/dev", nil)
 		if err != nil {
 			return err
 		}
@@ -44,7 +36,7 @@ func main() {
 					},
 				},
 			},
-		}, pulumi.Provider(cluster.Provider))
+		})
 
 		if err != nil {
 			return err
