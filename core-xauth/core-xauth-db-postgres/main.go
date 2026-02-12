@@ -9,17 +9,17 @@ import (
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		coreSystemStack, err := pulumi.NewStackReference(ctx, "mirrorboards/core-acta/dev", nil)
+		coreSystemStack, err := pulumi.NewStackReference(ctx, "mirrorboards/core-xauth/dev", nil)
 		if err != nil {
 			return err
 		}
 		NamespaceName := coreSystemStack.GetStringOutput(pulumi.String("NamespaceName"))
 
-		PostgresCluster, err := apiextensions.NewCustomResource(ctx, "core-acta-postgres", &apiextensions.CustomResourceArgs{
+		PostgresCluster, err := apiextensions.NewCustomResource(ctx, "core-xauth-postgres", &apiextensions.CustomResourceArgs{
 			ApiVersion: pulumi.String("postgresql.cnpg.io/v1"),
 			Kind:       pulumi.String("Cluster"),
 			Metadata: &metav1.ObjectMetaArgs{
-				Name:      pulumi.String("core-acta-postgres"),
+				Name:      pulumi.String("core-xauth-postgres"),
 				Namespace: NamespaceName,
 			},
 			OtherFields: kubernetes.UntypedArgs{
@@ -35,7 +35,7 @@ func main() {
 			return err
 		}
 
-		PostgresSecretName := pulumi.String("core-acta-postgres-app")
+		PostgresSecretName := pulumi.String("core-xauth-postgres-app")
 
 		ctx.Export("PostgresClusterName", PostgresCluster.Metadata.Name())
 		ctx.Export("PostgresSecretName", PostgresSecretName)
