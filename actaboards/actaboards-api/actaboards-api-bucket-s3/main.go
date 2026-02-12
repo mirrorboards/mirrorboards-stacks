@@ -77,7 +77,7 @@ func main() {
 		}
 
 		ownershipControls, err := apiextensions.NewCustomResource(ctx, ns.Get("s3", "ownership-controls"), &apiextensions.CustomResourceArgs{
-			ApiVersion: pulumi.String("s3.aws.upbound.io/v1beta2"),
+			ApiVersion: pulumi.String("s3.aws.upbound.io/v1beta1"),
 			Kind:       pulumi.String("BucketOwnershipControls"),
 			Metadata: &metav1.ObjectMetaArgs{
 				Name: pulumi.String(bucketName + "-ownership"),
@@ -101,7 +101,7 @@ func main() {
 		}
 
 		_, err = apiextensions.NewCustomResource(ctx, ns.Get("s3", "cors"), &apiextensions.CustomResourceArgs{
-			ApiVersion: pulumi.String("s3.aws.upbound.io/v1beta2"),
+			ApiVersion: pulumi.String("s3.aws.upbound.io/v1beta1"),
 			Kind:       pulumi.String("BucketCorsConfiguration"),
 			Metadata: &metav1.ObjectMetaArgs{
 				Name: pulumi.String(bucketName + "-cors"),
