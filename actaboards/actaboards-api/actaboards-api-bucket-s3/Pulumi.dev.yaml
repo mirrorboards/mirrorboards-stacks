@@ -1,4 +1,4 @@
 encryptionsalt: v1:Sk3MxqNYEEI=:v1:Dv9w9VXkHMiCbttX:4jhtIoQxqNuBwLUoo3sjskCQmwxIjw==
 config:
   aws:region: eu-west-1
-  s3:bucketName: mirrorboards-xxx-xxx
+  s3:bucketName: actaboards-bucket
