@@ -10,7 +10,7 @@ import (
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		ns := namespace.NewNamespace("actaboards", "api")
+		ns := namespace.NewNamespace("mirrorboard", "api")
 
 		Namespace, err := corev1.NewNamespace(ctx, ns.Get("namespace"), &corev1.NamespaceArgs{
 			Metadata: &metav1.ObjectMetaArgs{
