@@ -89,8 +89,10 @@ func main() {
 						"bucketRef": pulumi.Map{
 							"name": pulumi.String(bucketName),
 						},
-						"rule": pulumi.Map{
-							"objectOwnership": pulumi.String("BucketOwnerPreferred"),
+						"rule": pulumi.MapArray{
+							pulumi.Map{
+								"objectOwnership": pulumi.String("BucketOwnerPreferred"),
+							},
 						},
 					},
 				},
