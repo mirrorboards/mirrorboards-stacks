@@ -1,0 +1,7 @@
+name: actaboards-api-bucket-s3
+description: S3/Spaces bucket for file uploads with CORS configuration
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go

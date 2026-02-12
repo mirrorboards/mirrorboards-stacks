@@ -1,0 +1,7 @@
+name: actaboards-indexer
+description: actaboards-indexer
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go

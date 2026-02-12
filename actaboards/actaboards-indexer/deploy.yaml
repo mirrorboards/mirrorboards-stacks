@@ -1,0 +1,5 @@
+confirm: true
+stacks:
+  - actaboards-indexer
+  - actaboards-indexer-db-postgres
+  - actaboards-indexer-proc-postgres-indexer

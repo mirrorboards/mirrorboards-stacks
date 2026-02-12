@@ -1,0 +1,7 @@
+name: actaboards-api-db-postgres
+description: actaboards-api-db-postgres
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go

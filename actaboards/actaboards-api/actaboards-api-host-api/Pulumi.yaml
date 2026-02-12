@@ -1,0 +1,7 @@
+name: actaboards-api-host-api
+description: actaboards-api [host][api]
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go

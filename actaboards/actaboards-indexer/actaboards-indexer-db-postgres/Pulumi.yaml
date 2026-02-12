@@ -1,0 +1,7 @@
+name: actaboards-indexer-db-postgres
+description: actaboards-indexer [db][postgres]
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go

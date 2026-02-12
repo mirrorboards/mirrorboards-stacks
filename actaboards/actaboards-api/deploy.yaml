@@ -1,0 +1,9 @@
+confirm: false
+stacks:
+  - actaboards-api
+  - actaboards-api-db-postgres
+  - actaboards-api-db-redis
+  - actaboards-api-image-pull-secret
+  - actaboards-api-bucket-s3
+  - actaboards-api-host-api
+  - actaboards-api-host-web

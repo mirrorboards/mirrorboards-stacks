@@ -1,0 +1,13 @@
+encryptionsalt: v1:Sk3MxqNYEEI=:v1:Dv9w9VXkHMiCbttX:4jhtIoQxqNuBwLUoo3sjskCQmwxIjw==
+config:
+  digitalocean:token:
+    secure: v1:454QbwdvHzyMDPbQ:ieTbmOaZkLBAwiYJ4ZcmSC0l3xq1lfRPmsQITPDNM0TZYzc+4b4St5WIiG2b0/qKoVZuMuB+MFElbS6FmGfnikvoZYfs+3sNuHOG8IhaoPAbSEwq083u
+  digitalocean:spaces_secret_key:
+    secure: v1:hxdN8YH8mCXMVns/:RMp76urw6b4DRMoHpEzbN74mkmZ5+lxIg74vMtyaGXKBcAnoFhH9SKbEoOtWSadCO3nU84G1fOiDA3o=
+  digitalocean:spaces_access_id:
+    secure: v1:FigcEyejre3OOPHb:1aqnNkwXcRNH1dioM0+fQkF1PYcDv8/WDbjj18P5UQSUwpFu
+  cloudflare:token:
+    secure: v1:6rR9ACkGqlJFJ3TW:+M99a5j6lCCedFZoS7kyZuHynNBBYcKuJucA/hU40kJzcXLdVI8LeGUN4835LeVME/T5S7LRvSU=
+  github:token:
+    secure: v1:24A5L1YyY7LKdyo5:/usx0lOkcEISPXyDzIjB0hA86TR1eBkYKrtEYAZ/8f5AykoaEY2XT4ksKUWvk+w+YmxAFnQ9q18=
+  github:username: lunacrafts
