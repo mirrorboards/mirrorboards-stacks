@@ -1,0 +1,7 @@
+name: boards-notary-real-estate-transaction-coordination
+description: boards [notary][real-estate][transaction-coordination]
+runtime: go
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: go
