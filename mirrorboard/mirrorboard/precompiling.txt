@@ -1,0 +1,580 @@
+
+ ▐▛███▜▌   Claude Code v2.1.34
+▝▜█████▛▘  Opus 4.6 · Claude Max
+  ▘▘ ▝▝    ~/mirrorboards
+
+❯ boards-stacks/mirrorboard/mirrorboard/main.go:13-13                       
+  ```                                                                       
+  "api"                                                                     
+  ```                                                                       
+                                                                            
+   chcialbym zeby to co jest teraz jako "api", było brane z configu stacka. 
+   I ten stack powinien byc zdeployowany tutaj , powinnismy przekazac jako  
+  name "xxx" @mirrorboards/mirrorboards-platform/stacks/mirrorboards-platfo 
+  rm/mirrorboards-platform-pulumi-stacks-mirrorboard-xxx/main.go            
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Plik platform stacka jeszcze nie istnieje. Sprawdzę istniejące stacki dla
+  referencji.
+
+⏺ Searched for 3 patterns, read 5 files (ctrl+o to expand)
+
+⏺ Sprawdzę jak actaboards obsługuje config, żeby zastosować ten sam wzorzec.
+
+⏺ Searched for 1 pattern, read 4 files (ctrl+o to expand)
+
+⏺ Rozumiem. Dwie zmiany do zrobienia:
+
+  1. boards-stacks/mirrorboard/mirrorboard/main.go — "api" z Pulumi config
+  zamiast hardcoded
+  2. mirrorboards-platform-pulumi-stacks-mirrorboard-xxx/main.go — przerobić na
+  deployment mirrorboard stacka z przekazaniem "xxx" jako name
+
+⏺ Update(boards-stacks/mirrorboard/mirrorboard/main.go)
+  ⎿  Added 5 lines, removed 1 line
+       6    corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kuberne
+          tes/core/v1"
+       7    metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kuberne
+          tes/meta/v1"
+       8    "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+       9 +  "github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"           
+      10  )
+      11  
+      12  func main() {
+      13    pulumi.Run(func(ctx *pulumi.Context) error {
+      13 -    ns := namespace.NewNamespace("mirrorboard", "api")         
+      14 +    cfg := config.New(ctx, "")                                 
+      15 +    name := cfg.Require("name")                                
+      16  
+      17 +    ns := namespace.NewNamespace("mirrorboard", name)          
+      18 +                                                               
+      19      Namespace, err := corev1.NewNamespace(ctx, ns.Get("namespac
+          e"), &corev1.NamespaceArgs{
+      20        Metadata: &metav1.ObjectMetaArgs{
+      21          Name: pulumi.String(ns.Get()),
+
+⏺ Teraz przerobię platform stack na deployment mirrorboard z przekazaniem "xxx"
+  jako name.
+
+⏺ Write(mirrorboards/mirrorboards-platform/stacks/mirrorboards-platform/mirrorbo
+       ards-platform-pulumi-stacks-mirrorboard-xxx/main.go)
+  ⎿  Added 7 lines, removed 53 lines
+      12    pulumi.Run(func(ctx *pulumi.Context) error {
+      13      ns := namespace.NewNamespace("mirrorboards", "platform")
+      14  
+      15 -    actaboardsApi, err := apiextensions.NewCustomResource(ctx, 
+         -ns.Get("pulumi-stacks-actaboards-api"), &apiextensions.CustomRe
+         -sourceArgs{                                                    
+      15 +    _, err := apiextensions.NewCustomResource(ctx, ns.Get("pulu
+         +mi-stacks-mirrorboard-xxx"), &apiextensions.CustomResourceArgs{
+      16        ApiVersion: pulumi.String("pulumi.com/v1"),
+      17        Kind:       pulumi.String("Stack"),
+      18        Metadata: &metav1.ObjectMetaArgs{
+      19 -        Name:      pulumi.String("actaboards-api"),            
+      19 +        Name:      pulumi.String("mirrorboard-xxx"),           
+      20          Namespace: pulumi.String("pulumi-stacks"),
+      21        },
+      22        OtherFields: kubernetes.UntypedArgs{
+      23          "spec": pulumi.Map{
+      24            "serviceAccountName": pulumi.String("pulumi"),
+      25 -          "stack":              pulumi.String("mirrorboards/act
+         -aboards-api/dev"),                                             
+      25 +          "stack":              pulumi.String("mirrorboards/mir
+         +rorboard/dev"),                                                
+      26 +          "config": pulumi.Map{                                
+      27 +            "mirrorboard:name": pulumi.String("xxx"),          
+      28 +          },                                                   
+      29            "fluxSource": pulumi.Map{
+      30              "sourceRef": pulumi.Map{
+      31                "apiVersion": pulumi.String("source.toolkit.fluxc
+          d.io/v1"),
+      32                "kind":       pulumi.String("GitRepository"),
+      33                "name":       pulumi.String("mirrorboards-stacks"
+          ),
+      34              },
+      32 -            "dir": pulumi.String("actaboards/actaboards-api/act
+         -aboards-api"),                                                 
+      35 +            "dir": pulumi.String("mirrorboard/mirrorboard/mirro
+         +rboard"),                                                      
+      36            },
+      37            "envRefs": pulumi.Map{
+      38              "PULUMI_ACCESS_TOKEN": pulumi.Map{
+     ...
+       64        return err
+       65      }
+       66  
+       64 -    _, err = apiextensions.NewCustomResource(ctx, ns.Get("pulu
+          -mi-stacks-actaboards-api-bucket-s3"), &apiextensions.CustomRes
+          -ourceArgs{                                                    
+       65 -      ApiVersion: pulumi.String("pulumi.com/v1"),             
+       66 -      Kind:       pulumi.String("Stack"),                     
+       67 -      Metadata: &metav1.ObjectMetaArgs{                       
+       68 -        Name:      pulumi.String("actaboards-api-bucket-s3"), 
+       69 -        Namespace: pulumi.String("pulumi-stacks"),            
+       70 -      },                                                      
+       71 -      OtherFields: kubernetes.UntypedArgs{                    
+       72 -        "spec": pulumi.Map{                                   
+       73 -          "serviceAccountName": pulumi.String("pulumi"),      
+       74 -          "stack":              pulumi.String("mirrorboards/ac
+          -taboards-api-bucket-s3/dev"),                                 
+       75 -          "fluxSource": pulumi.Map{                           
+       76 -            "sourceRef": pulumi.Map{                          
+       77 -              "apiVersion": pulumi.String("source.toolkit.flux
+          -cd.io/v1"),                                                   
+       78 -              "kind":       pulumi.String("GitRepository"),   
+       79 -              "name":       pulumi.String("mirrorboards-stacks
+          -"),                                                           
+       80 -            },                                                
+       81 -            "dir": pulumi.String("actaboards/actaboards-api/ac
+          -taboards-api-bucket-s3"),                                     
+       82 -          },                                                  
+       83 -          "envRefs": pulumi.Map{                              
+       84 -            "PULUMI_ACCESS_TOKEN": pulumi.Map{                
+       85 -              "type": pulumi.String("Secret"),                
+       86 -              "secret": pulumi.Map{                           
+       87 -                "name": pulumi.String("pulumi-api-secret"),   
+       88 -                "key":  pulumi.String("accessToken"),         
+       89 -              },                                              
+       90 -            },                                                
+       91 -            "PULUMI_CONFIG_PASSPHRASE": pulumi.Map{           
+       92 -              "type": pulumi.String("Secret"),                
+       93 -              "secret": pulumi.Map{                           
+       94 -                "name": pulumi.String("pulumi-config-passphras
+          -e"),                                                          
+       95 -                "key":  pulumi.String("passphrase"),          
+       96 -              },                                              
+       97 -            },                                                
+       98 -            "GOWORK": pulumi.Map{                             
+       99 -              "type": pulumi.String("Literal"),               
+      100 -              "literal": pulumi.Map{                          
+      101 -                "value": pulumi.String("off"),                
+      102 -              },                                              
+      103 -            },                                                
+      104 -          },                                                  
+      105 -          "destroyOnFinalize": pulumi.Bool(true),             
+      106 -        },                                                    
+      107 -      },                                                      
+      108 -    }, pulumi.DependsOn([]pulumi.Resource{actaboardsApi}))    
+      109 -    if err != nil {                                           
+      110 -      return err                                              
+      111 -    }                                                         
+      112 -                                                              
+       67      return nil
+       68    })
+       69  }
+
+⏺ Gotowe. Podsumowanie zmian:
+
+  1. boards-stacks/mirrorboard/mirrorboard/main.go
+  - Dodano import config
+  - Zamiast hardcoded "api" — teraz cfg.Require("name") czyta wartość z Pulumi
+  config
+  - Namespace tworzony jako namespace.NewNamespace("mirrorboard", name)
+
+  2. mirrorboards-platform/.../mirrorboards-platform-pulumi-stacks-mirrorboard-x
+  xx/main.go
+  - Przerobiony z actaboards na mirrorboard stack
+  - PKO Stack CR z Name: "mirrorboard-xxx", stack "mirrorboards/mirrorboard/dev"
+  - Dodane pole config w spec, które przekazuje "mirrorboard:name": "xxx" — to
+  trafia do Pulumi config workload stacka
+  - fluxSource.dir wskazuje na "mirrorboard/mirrorboard/mirrorboard"
+
+  Przy deploymencie PKO ustawi config name=xxx, a mirrorboard stack utworzy
+  namespace mirrorboard-xxx.
+
+✻ Crunched for 2m 2s
+
+❯ niech to bedzie jednak jako config (config:name) 
+
+⏺ Update(mirrorboards/mirrorboards-platform/stacks/mirrorboards-platform/mirrorb
+        oards-platform-pulumi-stacks-mirrorboard-xxx/main.go)
+  ⎿  Added 1 line, removed 1 line
+      24            "serviceAccountName": pulumi.String("pulumi"),
+      25            "stack":              pulumi.String("mirrorboards/mir
+          rorboard/dev"),
+      26            "config": pulumi.Map{
+      27 -            "mirrorboard:name": pulumi.String("xxx"),          
+      27 +            "config:name": pulumi.String("xxx"),               
+      28            },
+      29            "fluxSource": pulumi.Map{
+      30              "sourceRef": pulumi.Map{
+
+⏺ Zmienione. Teraz config jest pod namespace config:name:
+
+  - Workload stack: config.New(ctx, "config") → cfg.Require("name") — czyta
+  config:name
+  - Platform stack: PKO przekazuje "config:name": "xxx"
+
+❯                                                                           
+                                                                 │          
+  │   Type     Reason     Age               From               Message      
+                                                                            
+                                                                            
+                           │                                                
+  │   ----     ------     ----              ----               -------      
+                                                                            
+                                                                            
+                           │                                                
+  │   Normal   Scheduled  30s               default-scheduler  Successfully 
+   assigned pulumi-stacks/mirrorboard-xxx-workspace-0 to                    
+  aks-workerpool-18405103-vmss000002                                        
+                                             │                              
+  │   Normal   Pulled     29s               kubelet            Container    
+  image "docker.io/pulumi/pulumi-kubernetes-operator:v2.4.1" already        
+  present on machine                                                        
+                                   │                                        
+  │   Normal   Created    29s               kubelet            Created      
+  container: bootstrap                                                      
+                                                                            
+                               │                                            
+  │   Normal   Started    29s               kubelet            Started      
+  container bootstrap                                                       
+                                                                            
+                               │                                            
+  │   Normal   Pulled     27s               kubelet            Container    
+  image "docker.io/pulumi/pulumi-kubernetes-operator:v2.4.1" already        
+  present on machine                                                        
+                                   │                                        
+  │   Normal   Created    27s               kubelet            Created      
+  container: fetch                                                          
+                                                                            
+                               │                                            
+  │   Normal   Started    27s               kubelet            Started      
+  container fetch                                                           
+                                                                            
+                               │                                            
+  │   Normal   Pulled     8s (x3 over 24s)  kubelet            Container    
+  image "pulumi/pulumi:latest-nonroot" already present on machine           
+                                                                            
+                             │                                              
+  │   Normal   Created    8s (x3 over 24s)  kubelet            Created      
+  container: pulumi                                                         
+                                                                            
+                               │                                            
+  │   Warning  Failed     7s (x3 over 23s)  kubelet            Error:       
+  failed to create containerd task: failed to create shim task: OCI runtime 
+   create failed: runc create failed: unable to start container process:    
+  error during container init: mk │                                         
+  │ dir /share/workspace: file exists: unknown                              
+                                                                            
+                                                                            
+                           │                                                
+  │   Warning  BackOff    6s (x2 over 22s)  kubelet            Back-off     
+  restarting failed container pulumi in pod mirrorboard-xxx-workspace-0_pul 
+  umi-stacks(3f586a55-92b6-43f5-ae8c-60ca380c4b18)                          
+                              │                                             
+  │                                                                         
+                                                                            
+                                                                            
+                           │                                                
+  └──────────────────────────────────────────────────────────────────────── 
+  ─────────────────────────────────                                         
+
+⏺ To jest błąd na poziomie OCI runtime, nie naszego kodu Pulumi. Sprawdzę
+  notatki o PKO + Flux.
+
+⏺ Recalled 1 memory (ctrl+o to expand)
+
+⏺ Błąd mkdir /share/workspace: file exists to problem na poziomie OCI runtime w
+  PKO workspace pod. Init containery (bootstrap, fetch) zakończyły się
+  pomyślnie, ale container pulumi nie może się uruchomić.
+
+  To znany problem z PKO v2 — workspace volume ma konflikt. Spróbuj usunąć PVC
+  powiązane z tym workspace:
+
+  kubectl delete pvc -n pulumi-stacks -l
+  app.kubernetes.io/instance=mirrorboard-xxx
+
+  Albo usuń cały workspace pod, żeby się odtworzył:
+
+  kubectl delete pod -n pulumi-stacks mirrorboard-xxx-workspace-0
+
+  ---
+  Zauważyłem też, że ustawiłem złą ścieżkę dir w fluxSource. Poprawiam:
+
+⏺ Update(mirrorboards/mirrorboards-platform/stacks/mirrorboards-platform/mirrorb
+        oards-platform-pulumi-stacks-mirrorboard-xxx/main.go)
+  ⎿  Added 1 line, removed 1 line
+      32                "kind":       pulumi.String("GitRepository"),
+      33                "name":       pulumi.String("mirrorboards-stacks"
+          ),
+      34              },
+      35 -            "dir": pulumi.String("mirrorboard/mirrorboard/mirro
+         -rboard"),                                                      
+      35 +            "dir": pulumi.String("mirrorboard/mirrorboard"),   
+      36            },
+      37            "envRefs": pulumi.Map{
+      38              "PULUMI_ACCESS_TOKEN": pulumi.Map{
+
+⏺ Poprawione: dir teraz wskazuje na mirrorboard/mirrorboard (gdzie leży
+  main.go), zamiast błędnego mirrorboard/mirrorboard/mirrorboard.
+
+  Co do błędu OCI — to jest problem z wolumenem /share/workspace w workspace
+  pod. Najczęściej pomaga usunięcie poda lub PVC, żeby PKO mógł go odtworzyć
+  czysto.
+
+❯ a czy moge tez zcustomizowac nazwe stacka? jakbym chcial ich zrobic       
+  kilkadziesiat z roznymi nazwami? w pulumi.com pokazuje mi sie             
+  "mirrorboard"                                                             
+  ⎿ ⧉ Selected 1 lines from mirrorboards/mirrorboards-platform/stacks/mirrorboar
+    ds-platform/mirrorboards-platform-pulumi-stacks-mirrorboard-xxx/main.go in 
+    Visual Studio Code
+
+
+⏺ Tak — w Pulumi Cloud stack jest identyfikowany jako org/project/stack. Teraz
+  masz:
+
+  mirrorboards/mirrorboard/dev
+
+  Projekt (mirrorboard) pochodzi z Pulumi.yaml i jest wspólny dla wszystkich
+  instancji. Żeby odróżnić kilkadziesiąt instancji, użyj unikalnej nazwy stacka
+  (trzecia część). Zmienię dev na xxx:
+
+⏺ Update(mirrorboards/mirrorboards-platform/stacks/mirrorboards-platform/mirrorb
+        oards-platform-pulumi-stacks-mirrorboard-xxx/main.go)
+  ⎿  Added 1 line, removed 1 line
+      22        OtherFields: kubernetes.UntypedArgs{
+      23          "spec": pulumi.Map{
+      24            "serviceAccountName": pulumi.String("pulumi"),
+      25 -          "stack":              pulumi.String("mirrorboards/mir
+         -rorboard/dev"),                                                
+      25 +          "stack":              pulumi.String("mirrorboards/mir
+         +rorboard/xxx"),                                                
+      26            "config": pulumi.Map{
+      27              "config:name": pulumi.String("xxx"),
+      28            },
+
+⏺ Teraz w Pulumi Cloud zobaczysz:
+  - Projekt: mirrorboard
+  - Stack: xxx
+
+  Gdy będziesz tworzył kolejne instancje (np. yyy), skopiujesz ten platform
+  stack i zmienisz:
+  - "mirrorboard-xxx" → "mirrorboard-yyy" (nazwa K8s)
+  - "mirrorboards/mirrorboard/xxx" → "mirrorboards/mirrorboard/yyy" (Pulumi
+  stack)
+  - "config:name": "xxx" → "config:name": "yyy" (config przekazywany do
+  workloadu)
+
+✻ Crunched for 38s
+
+❯ no dobra a nie da sie jakos inaczej, zeby to widnialo jako osobny stack? 
+
+⏺ Tak — najczystsze podejście to w ogóle zrezygnować z config i użyć nazwy
+  stacka Pulumi jako identyfikatora. W Go masz ctx.Stack():
+
+  boards-stacks/mirrorboard/mirrorboard/main.go — zamiast config:
+
+  ns := namespace.NewNamespace("mirrorboard", ctx.Stack())
+
+  Wtedy:
+  - Stack mirrorboards/mirrorboard/xxx → ctx.Stack() zwraca "xxx" → namespace
+  mirrorboard-xxx
+  - Stack mirrorboards/mirrorboard/yyy → ctx.Stack() zwraca "yyy" → namespace
+  mirrorboard-yyy
+
+  Każdy jest osobnym stackiem w Pulumi Cloud, config odpada, a jedyne co
+  zmieniasz per instancja to linijka "stack" w PKO Stack CR.
+
+  Chcesz tak to przerobić?
+
+✻ Baked for 48s
+
+❯ ok, to zrobmy tak 
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(boards-stacks/mirrorboard/mirrorboard/main.go)
+  ⎿  Added 1 line, removed 5 lines
+       6    corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kuberne
+          tes/core/v1"
+       7    metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kuberne
+          tes/meta/v1"
+       8    "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+       9 -  "github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"           
+       9  )
+      10  
+      11  func main() {
+      12    pulumi.Run(func(ctx *pulumi.Context) error {
+      14 -    cfg := config.New(ctx, "config")                           
+      15 -    name := cfg.Require("name")                                
+      13 +    ns := namespace.NewNamespace("mirrorboard", ctx.Stack())   
+      14  
+      17 -    ns := namespace.NewNamespace("mirrorboard", name)          
+      18 -                                                               
+      15      Namespace, err := corev1.NewNamespace(ctx, ns.Get("namespac
+          e"), &corev1.NamespaceArgs{
+      16        Metadata: &metav1.ObjectMetaArgs{
+      17          Name: pulumi.String(ns.Get()),
+
+⏺ Teraz usunę config z PKO Stack CR, bo nie jest już potrzebne.
+
+⏺ Read 1 file (ctrl+o to expand)
+  ⎿  Found 1 new diagnostic issue in 1 file (ctrl+o to expand)
+
+⏺ Update(mirrorboards/mirrorboards-platform/stacks/mirrorboards-platform/mirrorb
+        oards-platform-pulumi-stacks-mirrorboard-xxx/main.go)
+  ⎿  Removed 3 lines
+      23          "spec": pulumi.Map{
+      24            "serviceAccountName": pulumi.String("pulumi"),
+      25            "stack":              pulumi.String("mirrorboards/mir
+          rorboard/xxx"),
+      26 -          "config": pulumi.Map{                                
+      27 -            "config:name": pulumi.String("xxx"),               
+      28 -          },                                                   
+      26            "fluxSource": pulumi.Map{
+      27              "sourceRef": pulumi.Map{
+      28                "apiVersion": pulumi.String("source.toolkit.fluxc
+          d.io/v1"),
+
+⏺ Gotowe. Teraz:
+
+  - Workload stack — ctx.Stack() zwraca nazwę stacka (np. "xxx"), więc namespace
+   to mirrorboard-xxx
+  - Platform stack — "stack": "mirrorboards/mirrorboard/xxx" — żadnego config,
+  nazwa bierze się prosto z nazwy stacka Pulumi
+
+  Dla nowej instancji yyy kopiujesz platform stack i zmieniasz tylko:
+  - "mirrorboard-xxx" → "mirrorboard-yyy" (K8s metadata name)
+  - "mirrorboards/mirrorboard/xxx" → "mirrorboards/mirrorboard/yyy" (Pulumi
+  stack)
+
+❯ czemu po tym jak dodam nowy stack, to przez dobrych kilka minut wisi on w 
+   tym stanie?      Type                 Name             Status     Info   
+       pulumi:pulumi:Stack  mirrorboard-xxx             Compiling the       
+  program ...                                                               
+
+⏺ To normalne zachowanie dla Go + PKO. "Compiling the program..." to po prostu
+  go build wewnątrz workspace poda.
+
+  Dlaczego trwa to tak długo:
+  - Workspace pod jest efemeryczny — za każdym razem pobiera wszystkie Go
+  modules od zera (brak cache)
+  - pulumi-kubernetes SDK jest duży — samo go mod download + kompilacja trwa
+  - GOWORK=off — kompiluje niezależnie
+
+  Jak to przyspieszyć:
+
+  Najprościej — dodaj PVC na Go module cache. W PKO Stack CR dodaj
+  workspaceTemplate z wolumenem:
+
+  "workspaceTemplate": pulumi.Map{
+      "spec": pulumi.Map{
+          "containers": pulumi.Array{
+              pulumi.Map{
+                  "name": pulumi.String("pulumi"),
+                  "env": pulumi.Array{
+                      pulumi.Map{
+                          "name":  pulumi.String("GOPATH"),
+                          "value": pulumi.String("/gopath"),
+                      },
+                  },
+                  "volumeMounts": pulumi.Array{
+                      pulumi.Map{
+                          "name":      pulumi.String("go-cache"),
+                          "mountPath": pulumi.String("/gopath"),
+                      },
+                  },
+              },
+          },
+          "volumes": pulumi.Array{
+              pulumi.Map{
+                  "name": pulumi.String("go-cache"),
+                  "persistentVolumeClaim": pulumi.Map{
+                      "claimName": pulumi.String("go-module-cache"),
+                  },
+              },
+          },
+      },
+  },
+
+  Ale to dodaje złożoności. Przy kilkudziesięciu stackach współdzielony PVC na
+  Go cache byłby najbardziej opłacalny — jedno pobranie modułów, kolejne stacki
+  kompilują się w sekundy.
+
+  Chcesz to dodać, czy na razie akceptujesz kilka minut oczekiwania?
+
+❯ bardzo zalezy mi na predkosci + tych stackow bede mial tysiace 
+
+⏺ Przy tysiącach stacków kompilacja Go w każdym workspace pod to killer.
+  Najlepsze rozwiązanie: pre-kompilowany binary.
+
+  Zmienię Pulumi.yaml żeby używał gotowego binarki zamiast kompilować za każdym
+  razem:
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(boards-stacks/mirrorboard/mirrorboard/Pulumi.yaml)
+  ⎿  Added 4 lines, removed 1 line
+      1  name: mirrorboard
+      2  description: mirrorboard
+      3 -runtime: go                                                     
+      3 +runtime:                                                        
+      4 +  name: go                                                      
+      5 +  options:                                                      
+      6 +    binary: mirrorboard                                         
+      7  config:
+      8    pulumi:tags:
+      9      value:
+
+⏺ Teraz Pulumi pominie kompilację i uruchomi gotowy binary mirrorboard.
+  Potrzebujesz go zbudować w CI i umieścić w repo/artefakcie.
+
+  Prosty build (linux/amd64 bo AKS):
+
+  cd boards-stacks/mirrorboard/mirrorboard
+  GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o mirrorboard .
+
+  Jak dostarczyć binary do PKO workspace:
+
+  Masz dwie opcje:
+
+  1. Binary w git repo (najprostsze) — CI buduje, commituje binary do repo, Flux
+   pobiera razem ze źródłem. Dodaj do .gitignore wyjątek.
+  2. Custom workspace image (najczystsze przy tysiącach stacków) — Dockerfile:
+  FROM pulumi/pulumi:latest-nonroot
+  COPY mirrorboard /app/mirrorboard
+  2. Wtedy w PKO Stack CR dodajesz workspaceTemplate z custom image, a w
+  Pulumi.yaml ustawiasz binary: /app/mirrorboard.
+
+  Przy tysiącach stacków opcja 2 jest lepsza — jeden obraz, zero pobierania,
+  startup w sekundach. Którą wolisz?
+
+✻ Cooked for 1m 16s
+
+❯ a co jak zmieni sie ciało funkcji wewnątrz pulumi? bede musial budowac za 
+   kazdym razem?                                                            
+
+⏺ Tak — każda zmiana kodu Go wymaga przebudowania binary. Ale to nie musi być
+  ręczne. CI/CD robi to automatycznie:
+
+  - Push do repo → CI buduje binary → nowy image → Flux wykrywa → PKO restartuje
+   stacki
+
+  Budujesz raz, tysiące stacków korzysta natychmiast.
+
+  Natomiast jeśli chcesz uniknąć buildu całkowicie — to co ten stack faktycznie
+  robi? Teraz tworzy namespace. Jeśli planujesz dodawać więcej zasobów, ale
+  wszystko da się wyrazić deklaratywnie, możesz użyć Pulumi YAML zamiast Go —
+  zero kompilacji, interpretowane w locie:
+
+  name: mirrorboard
+  runtime: yaml
+
+  resources:
+    namespace:
+      type: kubernetes:core/v1:Namespace
+      properties:
+        metadata:
+          name: mirrorboard-${pulumi.stack}
+
+  outputs:
+    NamespaceName: ${namespace.metadata.name}
+
+  Startup natychmiastowy, żadnego buildu, a ${pulumi.stack} działa tak samo jak
+  ctx.Stack() w Go.
+
+  Co planujesz dodawać do tych stacków? Jeśli to głównie zasoby K8s
+  (deployments, services, configmaps), Pulumi YAML da radę. Jeśli potrzebujesz
+  logiki (ify, pętle, dynamiczne generowanie) — zostań przy Go + CI build.
