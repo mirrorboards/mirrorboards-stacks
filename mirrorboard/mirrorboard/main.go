@@ -22,6 +22,13 @@ func main() {
 			return err
 		}
 
+		/**
+
+		Create stack with:
+			- namespace
+			- streamwaves-connect with content_card indexer
+		*/
+
 		ctx.Export("NamespaceName", Namespace.Metadata.Name())
 
 		return nil
